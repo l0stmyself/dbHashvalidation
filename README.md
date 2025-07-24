@@ -30,6 +30,7 @@ This script performs the following operations:
   - pymongo>=4.0.0
   - pandas>=1.5.0
   - openpyxl>=3.0.0
+  - python-dotenv>=1.0.0
 
 ## Installation
 
@@ -38,48 +39,80 @@ This script performs the following operations:
 pip install -r requirements.txt
 ```
 
-## Usage
-
-### Basic Usage
-
+2. Configure your environment:
 ```bash
-python mongodb_hash_compare.py --source "mongodb://source-cluster:27017" --destination "mongodb://dest-cluster:27017"
+# Copy the example environment file
+cp .env.example .env
+
+# Edit .env with your actual MongoDB connection strings
+# Required: SOURCE_MONGODB_URI and DEST_MONGODB_URI
+# Optional: OUTPUT_FILE and VERBOSE
 ```
 
-### With Authentication
+## Configuration
+
+The script uses environment variables for configuration. Create a `.env` file in the project directory with the following variables:
 
 ```bash
-python mongodb_hash_compare.py \
-  --source "mongodb://username:password@source-cluster:27017/admin" \
-  --destination "mongodb://username:password@dest-cluster:27017/admin"
+# Required: MongoDB connection strings
+SOURCE_MONGODB_URI=mongodb://username:password@source-host:27017/database?authSource=admin
+DEST_MONGODB_URI=mongodb://username:password@dest-host:27017/database?authSource=admin
+
+# Optional: Output file path (leave empty for auto-generated)
+OUTPUT_FILE=
+
+# Optional: Enable verbose logging (true/false)
+VERBOSE=false
+```
+
+## Usage
+
+### Basic Usage (Environment-based)
+
+```bash
+# Configure your .env file first, then run:
+python mongodb_hash_compare.py
+```
+
+### With Command Line Overrides
+
+```bash
+# Override environment variables with command line arguments
+python mongodb_hash_compare.py --source "mongodb://source-cluster:27017" --destination "mongodb://dest-cluster:27017"
 ```
 
 ### With Custom Output File
 
 ```bash
-python mongodb_hash_compare.py \
-  --source "mongodb://source-cluster:27017" \
-  --destination "mongodb://dest-cluster:27017" \
-  --output "my_comparison_report.xlsx"
+# Via environment variable in .env:
+# OUTPUT_FILE=my_comparison_report.xlsx
+python mongodb_hash_compare.py
+
+# Or via command line override:
+python mongodb_hash_compare.py --output "my_comparison_report.xlsx"
 ```
 
 ### With Verbose Logging
 
 ```bash
-python mongodb_hash_compare.py \
-  --source "mongodb://source-cluster:27017" \
-  --destination "mongodb://dest-cluster:27017" \
-  --verbose
+# Via environment variable in .env:
+# VERBOSE=true
+python mongodb_hash_compare.py
+
+# Or via command line override:
+python mongodb_hash_compare.py --verbose
 ```
 
-## Command Line Arguments
+## Command Line Arguments (Optional Overrides)
+
+All command line arguments are now optional and will override the corresponding environment variables:
 
 | Argument | Required | Description |
 |----------|----------|-------------|
-| `--source` | Yes | Source MongoDB connection string |
-| `--destination` | Yes | Destination MongoDB connection string |
-| `--output` | No | Output Excel file path (default: auto-generated with timestamp) |
-| `--verbose` | No | Enable verbose logging |
+| `--source` | No | Source MongoDB connection string (overrides SOURCE_MONGODB_URI) |
+| `--destination` | No | Destination MongoDB connection string (overrides DEST_MONGODB_URI) |
+| `--output` | No | Output Excel file path (overrides OUTPUT_FILE) |
+| `--verbose` | No | Enable verbose logging (overrides VERBOSE) |
 
 ## Connection String Examples
 
